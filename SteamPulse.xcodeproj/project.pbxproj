@@ -1,0 +1,333 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00000000000000000000001 /* SteamPulseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000011 /* SteamPulseApp.swift */; };
+		A00000000000000000000002 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000012 /* AppContainer.swift */; };
+		A00000000000000000000003 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000013 /* RootTabView.swift */; };
+		A00000000000000000000004 /* GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000014 /* GameModels.swift */; };
+		A00000000000000000000005 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000015 /* Settings.swift */; };
+		A00000000000000000000006 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000016 /* FileStore.swift */; };
+		A00000000000000000000007 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000017 /* SettingsStore.swift */; };
+		A00000000000000000000008 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000018 /* NetworkClient.swift */; };
+		A00000000000000000000009 /* HotSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000019 /* HotSourceProvider.swift */; };
+		A0000000000000000000000A /* SteamChartsSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001A /* SteamChartsSourceProvider.swift */; };
+		A0000000000000000000000B /* GameDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001B /* GameDetailService.swift */; };
+		A0000000000000000000000C /* CacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001C /* CacheStore.swift */; };
+		A0000000000000000000000D /* RefreshCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001D /* RefreshCoordinator.swift */; };
+		A0000000000000000000000E /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001E /* DashboardViewModel.swift */; };
+		A0000000000000000000000F /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001F /* DashboardView.swift */; };
+		A00000000000000000000010 /* HotListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000020 /* HotListViewModel.swift */; };
+		A00000000000000000000021 /* HotListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000022 /* HotListView.swift */; };
+		A00000000000000000000023 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000024 /* SettingsViewModel.swift */; };
+		A00000000000000000000025 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000026 /* SettingsView.swift */; };
+		A00000000000000000000027 /* RateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* RateLimiter.swift */; };
+		A00000000000000000000028 /* SteamChartsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000033 /* SteamChartsParser.swift */; };
+		A00000000000000000000029 /* PriceHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000034 /* PriceHistoryStore.swift */; };
+		A0000000000000000000002A /* PriceAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000035 /* PriceAnalyzer.swift */; };
+		A0000000000000000000002B /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000036 /* GameDetailView.swift */; };
+		A0000000000000000000002C /* GameDetailParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000037 /* GameDetailParser.swift */; };
+		A0000000000000000000002D /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000038 /* DiagnosticsView.swift */; };
+		A0000000000000000000002E /* LoadStateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000039 /* LoadStateViews.swift */; };
+		A0000000000000000000002F /* PageStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003A /* PageStateResolver.swift */; };
+		A00000000000000000000030 /* PriceAndTagStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003B /* PriceAndTagStyle.swift */; };
+		A0000000000000000000003C /* RefreshStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003D /* RefreshStatusStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000030 /* SteamPulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SteamPulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000011 /* SteamPulseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamPulseApp.swift; sourceTree = "<group>"; };
+		A00000000000000000000012 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
+		A00000000000000000000013 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		A00000000000000000000014 /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
+		A00000000000000000000015 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		A00000000000000000000016 /* FileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
+		A00000000000000000000017 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		A00000000000000000000018 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		A00000000000000000000019 /* HotSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSourceProvider.swift; sourceTree = "<group>"; };
+		A0000000000000000000001A /* SteamChartsSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamChartsSourceProvider.swift; sourceTree = "<group>"; };
+		A0000000000000000000001B /* GameDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailService.swift; sourceTree = "<group>"; };
+		A0000000000000000000001C /* CacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStore.swift; sourceTree = "<group>"; };
+		A0000000000000000000001D /* RefreshCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshCoordinator.swift; sourceTree = "<group>"; };
+		A0000000000000000000001E /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		A0000000000000000000001F /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A00000000000000000000020 /* HotListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotListViewModel.swift; sourceTree = "<group>"; };
+		A00000000000000000000022 /* HotListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotListView.swift; sourceTree = "<group>"; };
+		A00000000000000000000024 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A00000000000000000000026 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A00000000000000000000031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A00000000000000000000032 /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiter.swift; sourceTree = "<group>"; };
+		A00000000000000000000033 /* SteamChartsParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamChartsParser.swift; sourceTree = "<group>"; };
+		A00000000000000000000034 /* PriceHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryStore.swift; sourceTree = "<group>"; };
+		A00000000000000000000035 /* PriceAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAnalyzer.swift; sourceTree = "<group>"; };
+		A00000000000000000000036 /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
+		A00000000000000000000037 /* GameDetailParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailParser.swift; sourceTree = "<group>"; };
+		A00000000000000000000038 /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		A00000000000000000000039 /* LoadStateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadStateViews.swift; sourceTree = "<group>"; };
+		A0000000000000000000003A /* PageStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageStateResolver.swift; sourceTree = "<group>"; };
+		A0000000000000000000003B /* PriceAndTagStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAndTagStyle.swift; sourceTree = "<group>"; };
+		A0000000000000000000003D /* RefreshStatusStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshStatusStore.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000040 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000050 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000051 /* SteamPulse */,
+				A00000000000000000000052 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000052 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000030 /* SteamPulse.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000051 /* SteamPulse */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000060 /* App */,
+				A00000000000000000000061 /* Core */,
+				A00000000000000000000062 /* Services */,
+				A00000000000000000000063 /* Features */,
+				A00000000000000000000031 /* Info.plist */,
+			);
+			path = SteamPulse;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000060 /* App */ = {isa = PBXGroup; children = (A00000000000000000000011, A00000000000000000000012, A00000000000000000000013); path = App; sourceTree = "<group>"; };
+		A00000000000000000000061 /* Core */ = {isa = PBXGroup; children = (A00000000000000000000064 /* Models */, A00000000000000000000065 /* Config */); path = Core; sourceTree = "<group>"; };
+		A00000000000000000000064 /* Models */ = {isa = PBXGroup; children = (A00000000000000000000014, A00000000000000000000015); path = Models; sourceTree = "<group>"; };
+		A00000000000000000000065 /* Config */ = {isa = PBXGroup; children = (A00000000000000000000016, A00000000000000000000017); path = Config; sourceTree = "<group>"; };
+		A00000000000000000000062 /* Services */ = {isa = PBXGroup; children = (A00000000000000000000066 /* Networking */, A00000000000000000000067 /* Sources */, A00000000000000000000068 /* Caching */, A0000000000000000000006D /* History */, A00000000000000000000069 /* Refresh */); path = Services; sourceTree = "<group>"; };
+		A00000000000000000000066 /* Networking */ = {isa = PBXGroup; children = (A00000000000000000000018, A00000000000000000000032); path = Networking; sourceTree = "<group>"; };
+		A00000000000000000000067 /* Sources */ = {isa = PBXGroup; children = (A00000000000000000000019, A0000000000000000000001A, A00000000000000000000033, A00000000000000000000037, A0000000000000000000001B); path = Sources; sourceTree = "<group>"; };
+		A00000000000000000000068 /* Caching */ = {isa = PBXGroup; children = (A0000000000000000000001C); path = Caching; sourceTree = "<group>"; };
+		A0000000000000000000006D /* History */ = {isa = PBXGroup; children = (A00000000000000000000034, A00000000000000000000035); path = History; sourceTree = "<group>"; };
+		A00000000000000000000069 /* Refresh */ = {isa = PBXGroup; children = (A0000000000000000000001D, A0000000000000000000003D); path = Refresh; sourceTree = "<group>"; };
+		A00000000000000000000063 /* Features */ = {isa = PBXGroup; children = (A0000000000000000000006A /* Dashboard */, A0000000000000000000006B /* HotList */, A0000000000000000000006E /* GameDetail */, A0000000000000000000006C /* Settings */, A0000000000000000000006F /* Diagnostics */, A00000000000000000000073 /* Common */); path = Features; sourceTree = "<group>"; };
+		A0000000000000000000006A /* Dashboard */ = {isa = PBXGroup; children = (A0000000000000000000001E, A0000000000000000000001F); path = Dashboard; sourceTree = "<group>"; };
+		A0000000000000000000006B /* HotList */ = {isa = PBXGroup; children = (A00000000000000000000020, A00000000000000000000022); path = HotList; sourceTree = "<group>"; };
+		A0000000000000000000006C /* Settings */ = {isa = PBXGroup; children = (A00000000000000000000024, A00000000000000000000026); path = Settings; sourceTree = "<group>"; };
+		A0000000000000000000006E /* GameDetail */ = {isa = PBXGroup; children = (A00000000000000000000036); path = GameDetail; sourceTree = "<group>"; };
+		A0000000000000000000006F /* Diagnostics */ = {isa = PBXGroup; children = (A00000000000000000000038); path = Diagnostics; sourceTree = "<group>"; };
+		A00000000000000000000073 /* Common */ = {isa = PBXGroup; children = (A00000000000000000000039, A0000000000000000000003A, A0000000000000000000003B); path = Common; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000070 /* SteamPulse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A00000000000000000000080 /* Build configuration list for PBXNativeTarget "SteamPulse" */;
+			buildPhases = (
+				A00000000000000000000071 /* Sources */,
+				A00000000000000000000040 /* Frameworks */,
+				A00000000000000000000072 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SteamPulse;
+			productName = SteamPulse;
+			productReference = A00000000000000000000030 /* SteamPulse.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000090 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A00000000000000000000070 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A00000000000000000000091 /* Build configuration list for PBXProject "SteamPulse" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000050;
+			productRefGroup = A00000000000000000000052 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000070 /* SteamPulse */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000072 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000071 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000001,
+				A00000000000000000000002,
+				A00000000000000000000003,
+				A00000000000000000000004,
+				A00000000000000000000005,
+				A00000000000000000000006,
+				A00000000000000000000007,
+				A00000000000000000000008,
+				A00000000000000000000009,
+				A0000000000000000000000A,
+				A0000000000000000000000B,
+				A0000000000000000000000C,
+				A0000000000000000000000D,
+				A0000000000000000000000E,
+				A0000000000000000000000F,
+				A00000000000000000000010,
+				A00000000000000000000021,
+				A00000000000000000000023,
+				A00000000000000000000025,
+				A00000000000000000000027,
+				A00000000000000000000028,
+				A00000000000000000000029,
+				A0000000000000000000002A,
+				A0000000000000000000002B,
+				A0000000000000000000002C,
+				A0000000000000000000002D,
+				A0000000000000000000002E,
+				A0000000000000000000002F,
+				A00000000000000000000030,
+				A0000000000000000000003C,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A000000000000000000000A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SteamPulse/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.SteamPulse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A000000000000000000000A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SteamPulse/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.SteamPulse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A000000000000000000000A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A000000000000000000000A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A00000000000000000000080 /* Build configuration list for PBXNativeTarget "SteamPulse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A000000000000000000000A0,
+				A000000000000000000000A1,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A00000000000000000000091 /* Build configuration list for PBXProject "SteamPulse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A000000000000000000000A2,
+				A000000000000000000000A3,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000090 /* Project object */;
+}
