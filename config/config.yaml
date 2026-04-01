@@ -1,0 +1,54 @@
+steam:
+  base_url: "https://api.steampowered.com"
+  store_base_url: "https://store.steampowered.com"
+  appdetails_url: "https://store.steampowered.com/api/appdetails"
+
+collector:
+  regions:
+    - us
+    - cn
+    - gb
+    - jp
+    - de
+  default_currency:
+    us: "USD"
+    cn: "CNY"
+    gb: "GBP"
+    jp: "JPY"
+    de: "EUR"
+  default_cc_to_currency:
+    us: "USD"
+    cn: "CNY"
+    gb: "GBP"
+    jp: "JPY"
+    de: "EUR"
+
+rate_limit:
+  max_workers: 3
+  requests_per_second_per_worker: 0.8
+  max_retries: 6
+  backoff_factor: 2.0
+  jitter_min: 0.1
+  jitter_max: 0.4
+  error_rate_threshold: 0.15
+  cooldown_seconds: 30
+
+paths:
+  data_root: "data"
+  catalog_dir: "data/catalog"
+  prices_dir: "data/prices"
+  runs_dir: "data/runs"
+  state_dir: "data/state"
+  logs_dir: "logs"
+
+logging:
+  level: "INFO"
+  console: true
+  file: true
+  json_format: true
+
+checkpoint:
+  save_interval: 500
+  catalog_checkpoint_file: "data/state/checkpoint.json"
+  last_modified_file: "data/state/last_if_modified_since.json"
+  failed_items_dir: "data/state/failed_items"
