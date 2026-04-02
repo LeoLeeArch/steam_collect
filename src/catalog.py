@@ -105,24 +105,6 @@ class CatalogSync:
             page_count += 1
             try:
                 response = await self.fetch_app_list_page(last_appid=last_appid, if_modified_since=if_modified_since)
-                # #region agent log
-                import os, json, time
-                log_payload = {
-                    "sessionId": "7ad0df",
-                    "location": "src/catalog.py:108",
-                    "message": "Steam API Page Response",
-                    "data": {
-                        "page": page_count,
-                        "apps_count": len(response.get("apps", [])),
-                        "last_appid_received": response.get("last_appid"),
-                        "have_more": response.get("have_more_results"),
-                        "last_appid_sent": last_appid
-                    },
-                    "timestamp": int(time.time() * 1000)
-                }
-                with open("/Users/string/Desktop/steam_collect/.cursor/debug-7ad0df.log", "a") as f:
-                    f.write(json.dumps(log_payload) + "\n")
-                # #endregion
                 apps = response.get("apps", [])
                 if not apps:
                     break
