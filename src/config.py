@@ -6,8 +6,12 @@ from typing import Dict, List
 
 import yaml
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
 from .models import Checkpoint
+
+# Load environment variables
+load_dotenv()
 
 
 class CollectorConfig(BaseModel):
@@ -19,6 +23,10 @@ class CollectorConfig(BaseModel):
     paths: Dict = Field(default_factory=dict)
     logging: Dict = Field(default_factory=dict)
     checkpoint: Dict = Field(default_factory=dict)
+    
+    @property
+    def steam_api_key(self) -> str:
+        return os.getenv("STEAM_API_KEY", "")
     
     @classmethod
     def from_yaml(cls, config_path: str = "config/config.yaml") -> "CollectorConfig":

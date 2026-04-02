@@ -66,6 +66,8 @@ class PriceSnapshot(BaseModel):
     is_discounted: bool = Field(False, description="Whether there is a discount")
     is_free_now: bool = Field(False, description="Whether it's currently free")
     
+    discount_description: Optional[str] = Field(None, description="Promotion description or sale name if available")
+    
     package_id: Optional[int] = Field(None, description="Associated package ID if any")
     
     # Steam tracking
