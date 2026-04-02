@@ -25,6 +25,7 @@ path_manager = get_path_manager()
 
 
 class CatalogSync:
+
     """Handles Steam catalog synchronization with optional PocketBase sync."""
     
     def __init__(self):
@@ -36,7 +37,7 @@ class CatalogSync:
     
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30),
+            timeout=aiohttp.ClientTimeout(sock_connect=10, sock_read=20),
             headers={"User-Agent": "SteamPriceCollector/0.1 (+https://github.com)"}
         )
         if not self.pb_client.authenticate():
@@ -85,6 +86,13 @@ class CatalogSync:
     async def sync_catalog(self, mode: str = "incremental", max_pages: int = 0) -> Tuple[CrawlRunMetadata, List[Dict]]:
         logger.info(f"Starting catalog sync", mode=mode, run_id=self.run_id)
         is_full = mode == "full"
+        
+        # H6 Fix: Delete existing catalog file if full sync to avoid duplicates
+        catalog_path = path_manager.get_catalog_path(format_date())
+        if is_full and catalog_path.exists():
+            logger.info("Deleting existing catalog for full sync", path=str(catalog_path))
+            catalog_path.unlink()
+            
         last_appid = 0
         if_modified_since = 0 if is_full else load_last_if_modified_since()
         processed_appids: Set[int] = set()
@@ -97,8 +105,27 @@ class CatalogSync:
             page_count += 1
             try:
                 response = await self.fetch_app_list_page(last_appid=last_appid, if_modified_since=if_modified_since)
+                # #region agent log
+                import os, json, time
+                log_payload = {
+                    "sessionId": "7ad0df",
+                    "location": "src/catalog.py:108",
+                    "message": "Steam API Page Response",
+                    "data": {
+                        "page": page_count,
+                        "apps_count": len(response.get("apps", [])),
+                        "last_appid_received": response.get("last_appid"),
+                        "have_more": response.get("have_more_results"),
+                        "last_appid_sent": last_appid
+                    },
+                    "timestamp": int(time.time() * 1000)
+                }
+                with open("/Users/string/Desktop/steam_collect/.cursor/debug-7ad0df.log", "a") as f:
+                    f.write(json.dumps(log_payload) + "\n")
+                # #endregion
                 apps = response.get("apps", [])
-                if not apps: break
+                if not apps:
+                    break
                 
                 for app in apps:
                     appid = app.get("appid")
@@ -110,8 +137,9 @@ class CatalogSync:
                         catalog_entry = self.process_app(app, is_full_sync=is_full)
                         append_jsonl(path_manager.get_catalog_path(format_date()), catalog_entry)
                         
-                        # Sync to PocketBase
-                        self.pb_client.sync_catalog(catalog_entry.model_dump(mode="json"))
+                        # Sync to PocketBase - Only if NOT a full sync to avoid 180k slow requests
+                        if not is_full:
+                            self.pb_client.sync_catalog(catalog_entry.model_dump(mode="json"))
                         
                         if app.get("last_modified") or app.get("price_change_number"):
                             self.changed_apps.append({"appid": appid, "name": catalog_entry.name})
@@ -122,7 +150,6 @@ class CatalogSync:
                 has_more = response.get("have_more_results", False) or len(apps) >= 900
                 if self.scanned_count % config.checkpoint.get("save_interval", 500) == 0:
                     self._save_progress(last_appid, if_modified_since)
-                await asyncio.sleep(0.3)
             except Exception as e:
                 logger.error("Failed to fetch catalog page", page=page_count, error=str(e))
                 break

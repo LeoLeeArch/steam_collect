@@ -51,6 +51,11 @@ def main():
         default=0,
         help="Limit the number of apps to collect prices for (0 for no limit)"
     )
+    price_parser.add_argument(
+        "--force-refresh",
+        action="store_true",
+        help="Bypass daily breakpoint resume and force re-fetch from Steam even if fetched today"
+    )
     
     # Nightly job
     nightly_parser = subparsers.add_parser(
@@ -118,100 +123,117 @@ def main():
     print(f"Data root: {config.data_root}")
     print("-" * 60)
     
-    if args.command == "full-sync-catalog":
-        print("Starting full catalog synchronization...")
-        import asyncio
-        asyncio.run(run_catalog_sync(mode="full"))
-        
-    elif args.command == "incremental-sync-catalog":
-        print("Starting incremental catalog synchronization...")
-        import asyncio
-        asyncio.run(run_catalog_sync(mode="incremental"))
-        
-    elif args.command == "collect-prices":
-        import asyncio
-        regions = args.regions or config.regions
-        print(f"Collecting prices for regions: {regions}")
-        
-        # Determine which apps to collect for
-        # By default, we look at today's catalog
-        dt = format_date()
-        path_manager = get_path_manager()
-        catalog_path = path_manager.get_catalog_path(dt)
-        
-        if not catalog_path.exists():
-            print(f"Error: No catalog found for today ({dt}). Please run a catalog sync first.")
-            sys.exit(1)
-            
-        print(f"Loading app IDs from {catalog_path}...")
-        appids = []
-        for app in read_jsonl(catalog_path, model_class=SteamAppCatalog):
-            appids.append(app.appid)
-            
-        if not appids:
-            print("No apps found in today's catalog.")
-            sys.exit(0)
-            
-        if args.limit > 0:
-            print(f"Limiting collection to {args.limit} apps.")
-            appids = appids[:args.limit]
-            
-        print(f"Found {len(appids)} apps. Starting collection...")
-        asyncio.run(collect_prices(appids=appids, regions=regions))
-        
-    elif args.command == "nightly-job":
-        import asyncio
-        regions = args.regions or config.regions
-        run_id = generate_run_id()
-        print(f"Starting nightly job with run_id: {run_id}")
-        print(f"Target regions: {regions}")
-        
-        if args.full:
-            print("\nStep 1: FULL catalog synchronization...")
+    try:
+        if args.command == "full-sync-catalog":
+            print("Starting full catalog synchronization...")
+            import asyncio
             asyncio.run(run_catalog_sync(mode="full"))
             
-            print("\nStep 2: Price collection for ALL apps...")
+        elif args.command == "incremental-sync-catalog":
+            print("Starting incremental catalog synchronization...")
+            import asyncio
+            asyncio.run(run_catalog_sync(mode="incremental"))
+            
+        elif args.command == "collect-prices":
+            import asyncio
+            # Handle comma-separated regions if passed as a single string in a list
+            raw_regions = args.regions or config.regions
+            regions = []
+            for r in raw_regions:
+                regions.extend([x.strip() for x in r.split(",") if x.strip()])
+            
+            print(f"Collecting prices for regions: {regions}")
+            
+            # Determine which apps to collect for
+            # By default, we look at today's catalog
             dt = format_date()
             path_manager = get_path_manager()
             catalog_path = path_manager.get_catalog_path(dt)
-            appids = []
-            if catalog_path.exists():
-                for app in read_jsonl(catalog_path):
-                    appids.append(app["appid"])
-            else:
-                print(f"Error: No catalog found for today ({dt}). Run full-sync-catalog first.")
-                sys.exit(1)
-        else:
-            print("\nStep 1: Incremental catalog synchronization...")
-            _, changed_apps = asyncio.run(run_catalog_sync(mode="incremental"))
             
-            print("\nStep 2: Price collection for changed apps...")
-            if not changed_apps:
-                print("No apps changed since last sync. Skipping price collection.")
-                appids = []
-            else:
-                appids = [app["appid"] for app in changed_apps]
-
-        if appids:
+            if not catalog_path.exists():
+                print(f"Error: No catalog found for today ({dt}). Please run a catalog sync first.")
+                sys.exit(1)
+                
+            print(f"Loading app IDs from {catalog_path}...")
+            appids = []
+            for app in read_jsonl(catalog_path, model_class=SteamAppCatalog):
+                appids.append(app.appid)
+                
+            if not appids:
+                print("No apps found in today's catalog.")
+                sys.exit(0)
+                
             if args.limit > 0:
                 print(f"Limiting collection to {args.limit} apps.")
                 appids = appids[:args.limit]
-            print(f"Found {len(appids)} apps to process. Collecting prices...")
-            asyncio.run(collect_prices(appids=appids, regions=regions, run_id=run_id, force_refresh=args.force_refresh))
-        
-    elif args.command == "run-worker":
-        print("Starting worker daemon...")
-        import asyncio
-        from .worker import run_worker
-        asyncio.run(run_worker())
-        
-    elif args.command == "resume-run":
-        print(f"Resuming run: {args.run_id}")
-        print("✅ resume-run command registered (implementation pending)")
-        
-    elif args.command == "validate-jsonl":
-        print("Validating JSONL files...")
-        print("✅ validate-jsonl command registered (implementation pending)")
+                
+            print(f"Found {len(appids)} apps. Starting collection...")
+            asyncio.run(collect_prices(appids=appids, regions=regions, force_refresh=args.force_refresh))
+            
+        elif args.command == "nightly-job":
+            import asyncio
+            # Handle comma-separated regions
+            raw_regions = args.regions or config.regions
+            regions = []
+            for r in raw_regions:
+                regions.extend([x.strip() for x in r.split(",") if x.strip()])
+                
+            run_id = generate_run_id()
+            print(f"Starting nightly job with run_id: {run_id}")
+            print(f"Target regions: {regions}")
+            
+            if args.full:
+                print("\nStep 1: FULL catalog synchronization...")
+                asyncio.run(run_catalog_sync(mode="full"))
+                
+                print("\nStep 2: Price collection for ALL apps...")
+                dt = format_date()
+                path_manager = get_path_manager()
+                catalog_path = path_manager.get_catalog_path(dt)
+                appids = []
+                if catalog_path.exists():
+                    for app in read_jsonl(catalog_path):
+                        appids.append(app["appid"])
+                else:
+                    print(f"Error: No catalog found for today ({dt}). Run full-sync-catalog first.")
+                    sys.exit(1)
+            else:
+                print("\nStep 1: Incremental catalog synchronization...")
+                _, changed_apps = asyncio.run(run_catalog_sync(mode="incremental"))
+                
+                print("\nStep 2: Price collection for changed apps...")
+                if not changed_apps:
+                    print("No apps changed since last sync. Skipping price collection.")
+                    appids = []
+                else:
+                    appids = [app["appid"] for app in changed_apps]
+
+            if appids:
+                if args.limit > 0:
+                    print(f"Limiting collection to {args.limit} apps.")
+                    appids = appids[:args.limit]
+                print(f"Found {len(appids)} apps to process. Collecting prices...")
+                asyncio.run(collect_prices(appids=appids, regions=regions, run_id=run_id, force_refresh=args.force_refresh))
+            
+        elif args.command == "run-worker":
+            print("Starting worker daemon...")
+            import asyncio
+            from .worker import run_worker
+            asyncio.run(run_worker())
+            
+        elif args.command == "resume-run":
+            print(f"Resuming run: {args.run_id}")
+            print("✅ resume-run command registered (implementation pending)")
+            
+        elif args.command == "validate-jsonl":
+            print("Validating JSONL files...")
+            print("✅ validate-jsonl command registered (implementation pending)")
+            
+    except Exception as e:
+        print(f"\nCRITICAL ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
     
     print(f"\nRun completed at: {get_utc_now()}")
 

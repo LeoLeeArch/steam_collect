@@ -25,7 +25,6 @@ logger = structlog.get_logger(__name__)
 config = get_config()
 path_manager = get_path_manager()
 
-
 class PriceCollector:
     """Handles price collection for multiple regions with caching and PB sync."""
     
@@ -52,7 +51,7 @@ class PriceCollector:
             CREATE TABLE IF NOT EXISTS last_prices (
                 appid INTEGER,
                 country_code TEXT,
-                last_price INTEGER,
+                last_price REAL,
                 last_updated TIMESTAMP,
                 PRIMARY KEY (appid, country_code)
             )
@@ -79,15 +78,18 @@ class PriceCollector:
 
     def update_last_price(self, appid: int, cc: str, price: int):
         """Update last price in SQLite cache."""
-        self.db_conn.execute(
-            "INSERT OR REPLACE INTO last_prices (appid, country_code, last_price, last_updated) VALUES (?, ?, ?, ?)",
-            (appid, cc, price, datetime.now().isoformat())
-        )
-        self.db_conn.commit()
+        try:
+            self.db_conn.execute(
+                "INSERT OR REPLACE INTO last_prices (appid, country_code, last_price, last_updated) VALUES (?, ?, ?, ?)",
+                (appid, cc, price, datetime.now().isoformat())
+            )
+            self.db_conn.commit()
+        except Exception as e:
+            raise
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=20),
+            timeout=aiohttp.ClientTimeout(sock_connect=10, sock_read=20),
             headers={"User-Agent": "SteamPriceCollector/0.1 (+https://github.com)"}
         )
         # Authenticate with PocketBase
@@ -154,19 +156,21 @@ class PriceCollector:
         )
         
         if price_overview:
-            # Bug fix: Steam API might return 29.99 (float) or 2999 (minor units/cents)
-            # We strictly normalize everything to minor units (integer cents/fen/etc)
+            # Normalize to major units (float, e.g. 5.99)
             def parse_price(val):
                 if val is None: return None
                 val_str = str(val)
+                res = None
                 if "." in val_str:
-                    # e.g., 29.99 -> 2999
-                    return int(round(float(val_str) * 100))
-                # Already in minor units, e.g., 2999
-                return int(val)
+                    # Already a float (e.g. 5.99)
+                    res = float(val_str)
+                else:
+                    # Minor units (e.g. 599) -> float (5.99)
+                    res = round(float(val) / 100, 2)
+                return res
 
-            snapshot.initial_price_minor = parse_price(price_overview.get("initial"))
-            snapshot.final_price_minor = parse_price(price_overview.get("final"))
+            snapshot.initial_price = parse_price(price_overview.get("initial"))
+            snapshot.final_price = parse_price(price_overview.get("final"))
             snapshot.discount_percent = price_overview.get("discount_percent")
             snapshot.is_discounted = snapshot.discount_percent > 0 if snapshot.discount_percent is not None else False
             
@@ -210,10 +214,10 @@ class PriceCollector:
                     continue
 
                 # 2. Check local SQLite cache
-                current_price = snapshot.final_price_minor if snapshot.final_price_minor is not None else (0 if snapshot.is_free_now else -1)
+                current_price = snapshot.final_price if snapshot.final_price is not None else (0.0 if snapshot.is_free_now else -1.0)
                 last_price = self.get_last_price(appid, cc)
 
-                if last_price is not None and last_price == current_price:
+                if last_price is not None and abs(last_price - current_price) < 0.001:
                     self.stats["cached"] += 1
                     # Even if price is same, we mark it as "updated today" in cache so we don't query Steam again today if interrupted
                     self.update_last_price(appid, cc, current_price)
@@ -225,8 +229,12 @@ class PriceCollector:
                 append_jsonl(path, snapshot)
                 
                 # 4. Sync to PocketBase
-                self.pb_client.sync_price(snapshot.model_dump(mode="json"))
-                
+                pb_success = self.pb_client.sync_price(snapshot.model_dump(mode="json"))
+
+                if not pb_success:
+                    # Critical: If PB fails, we SHOULD NOT update SQLite so it retries next time
+                    return
+
                 # 5. Update local cache
                 self.update_last_price(appid, cc, current_price)
                 

@@ -58,9 +58,9 @@ class PriceSnapshot(BaseModel):
     country_code: str = Field(..., description="Country code (us, cn, gb, jp, de)")
     currency: str = Field(..., description="Currency code (USD, CNY, GBP, JPY, EUR)")
     
-    # Prices in minor units (cents, fen, pence, yen)
-    initial_price_minor: Optional[int] = Field(None, description="Original price in minor units")
-    final_price_minor: Optional[int] = Field(None, description="Final/discounted price in minor units")
+    # Prices in major units (USD, CNY, etc. e.g., 5.99)
+    initial_price: Optional[float] = Field(None, description="Original price (e.g., 5.99)")
+    final_price: Optional[float] = Field(None, description="Final/discounted price (e.g., 5.99)")
     discount_percent: Optional[int] = Field(None, description="Discount percentage")
     
     is_discounted: bool = Field(False, description="Whether there is a discount")

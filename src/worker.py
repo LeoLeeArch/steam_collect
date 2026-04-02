@@ -1,6 +1,7 @@
 """Worker daemon that pulls batch jobs from PocketBase and runs them."""
 
 import asyncio
+import json
 import structlog
 from datetime import datetime
 import sys
@@ -51,13 +52,14 @@ async def run_worker():
                 # we do a simple file size check for full sync.
                 is_catalog_sync_needed = True
                 if mode == "full":
-                    # Check if today's catalog exists and has enough size to be a real full catalog (180k+ apps ~ 100MB+)
-                    if catalog_path.exists() and catalog_path.stat().st_size > 50_000_000:
+                    # Check if today's catalog exists and has enough size to be a real full catalog (180k+ apps ~ 40MB+)
+                    size = catalog_path.stat().st_size if catalog_path.exists() else 0
+                    if catalog_path.exists() and size > 25_000_000:
                         logger.info("Full catalog for today already exists locally, skipping duplicate full catalog sync.")
                         is_catalog_sync_needed = False
                     else:
                         if catalog_path.exists():
-                            logger.info(f"Existing catalog is too small ({catalog_path.stat().st_size} bytes), overwriting with full sync...")
+                            logger.info(f"Existing catalog is too small ({size} bytes), overwriting with full sync...")
                             catalog_path.unlink() # Delete incomplete catalog so it doesn't cause issues
                 
                 if is_catalog_sync_needed:
