@@ -92,8 +92,8 @@ async def run_worker():
                 
                 # 3. Collect Prices
                 if appids:
-                    # In worker mode, if mode is full, we bypass cache daily skip (force_refresh=True)
-                    force_refresh = (mode == "full")
+                    # In worker mode, we let the SQLite cache handle resumption automatically
+                    force_refresh = False
                     logger.info("Starting price collection for batch", region=region, app_count=len(appids))
                     await collect_prices(appids=appids, regions=[region], run_id=batch_id, force_refresh=force_refresh)
                 else:
