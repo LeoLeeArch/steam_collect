@@ -39,7 +39,7 @@ async def main():
         regions = ["cn", "us", "gb", "jp", "de", "vn", "id", "in"]
         
         tasks = []
-        sem = asyncio.Semaphore(50)
+        sem = asyncio.Semaphore(20)
         
         async def create_record(date_str, region, mode, sched_time):
             async with sem:
@@ -50,11 +50,17 @@ async def main():
                     "status": "pending",
                     "scheduled_time": sched_time
                 }
-                # use try/except block to ignore duplicate entries
-                try:
-                    resp = await session.post(f"{pb_url}/api/collections/batch_controls/records", json=payload, headers=headers)
-                except:
-                    pass
+                for retry in range(3):
+                    try:
+                        async with session.post(f"{pb_url}/api/collections/batch_controls/records", json=payload, headers=headers) as resp:
+                            if resp.status == 200:
+                                return
+                            elif resp.status == 429:
+                                await asyncio.sleep(1)
+                            else:
+                                break
+                    except:
+                        await asyncio.sleep(1)
 
         # Calculate time offsets for staggered region starts
         # For simplicity, they can just start at specific UTC times on that day

@@ -154,8 +154,19 @@ class PriceCollector:
         )
         
         if price_overview:
-            snapshot.initial_price_minor = price_overview.get("initial")
-            snapshot.final_price_minor = price_overview.get("final")
+            # Bug fix: Steam API might return 29.99 (float) or 2999 (minor units/cents)
+            # We strictly normalize everything to minor units (integer cents/fen/etc)
+            def parse_price(val):
+                if val is None: return None
+                val_str = str(val)
+                if "." in val_str:
+                    # e.g., 29.99 -> 2999
+                    return int(round(float(val_str) * 100))
+                # Already in minor units, e.g., 2999
+                return int(val)
+
+            snapshot.initial_price_minor = parse_price(price_overview.get("initial"))
+            snapshot.final_price_minor = parse_price(price_overview.get("final"))
             snapshot.discount_percent = price_overview.get("discount_percent")
             snapshot.is_discounted = snapshot.discount_percent > 0 if snapshot.discount_percent is not None else False
             

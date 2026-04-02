@@ -83,7 +83,9 @@ def setup():
                 {"name": "scheduled_time", "type": "date"},
                 {"name": "started_at", "type": "date"},
                 {"name": "finished_at", "type": "date"},
-                {"name": "error_log", "type": "text"}
+                {"name": "error_log", "type": "text"},
+                {"name": "apps_updated", "type": "number"},
+                {"name": "apps_processed", "type": "number"}
             ],
             "indexes": [
                 "CREATE UNIQUE INDEX idx_batch_date_region ON batch_controls (batch_date, region)",

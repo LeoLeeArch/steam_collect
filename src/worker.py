@@ -102,6 +102,8 @@ async def run_worker():
                 # --------------------------------------
                 
                 # 3. Collect Prices
+                apps_updated_count = 0
+                apps_processed_count = 0
                 if appids:
                         # In worker mode, we let the SQLite cache handle resumption automatically
                     force_refresh = False
@@ -111,14 +113,28 @@ async def run_worker():
                     if len(appids) < 10000 and mode == "full":
                         logger.warning(f"Batch mode is full but only {len(appids)} apps were found! Check if catalog sync failed or was interrupted.")
                     
-                    await collect_prices(appids=appids, regions=[region], run_id=batch_id, force_refresh=force_refresh)
+                    stats = await collect_prices(appids=appids, regions=[region], run_id=batch_id, force_refresh=force_refresh)
+                    # "success" in stats means the price changed/newly added and was synced to PB
+                    # "cached" means price was same (skipped PB)
+                    # "fail" means error
+                    # "skipped" means already handled today (breakpoint resume)
+                    apps_updated_count = stats.get("success", 0)
+                    apps_processed_count = stats.get("success", 0) + stats.get("cached", 0) + stats.get("fail", 0) + stats.get("skipped", 0)
                 else:
                     logger.info("No apps to collect for this batch")
                 
                 # Mark as completed
                 now_str = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.000Z")
-                pb.update_batch(batch_id, {"status": "completed", "finished_at": now_str})
-                logger.info("Batch completed successfully", batch_id=batch_id)
+                pb.update_batch(batch_id, {
+                    "status": "completed", 
+                    "finished_at": now_str, 
+                    "apps_updated": apps_updated_count,
+                    "apps_processed": apps_processed_count
+                })
+                logger.info("Batch completed successfully", 
+                           batch_id=batch_id, 
+                           apps_updated=apps_updated_count,
+                           apps_processed=apps_processed_count)
                 
             except Exception as e:
                 logger.error("Batch failed during execution", batch_id=batch_id, error=str(e))
