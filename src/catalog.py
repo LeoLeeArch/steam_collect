@@ -110,6 +110,9 @@ class CatalogSync:
                         catalog_entry = self.process_app(app, is_full_sync=is_full)
                         append_jsonl(path_manager.get_catalog_path(format_date()), catalog_entry)
                         
+                        # Sync to PocketBase
+                        self.pb_client.sync_catalog(catalog_entry.model_dump(mode="json"))
+                        
                         if app.get("last_modified") or app.get("price_change_number"):
                             self.changed_apps.append({"appid": appid, "name": catalog_entry.name})
                     except Exception as e:
