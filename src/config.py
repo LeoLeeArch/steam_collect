@@ -27,6 +27,24 @@ class CollectorConfig(BaseModel):
     @property
     def steam_api_key(self) -> str:
         return os.getenv("STEAM_API_KEY", "")
+
+    def get_api_keys(self) -> List[str]:
+        """Dynamic loading of API keys from config/api_keys.txt. 
+        Each key allows +1 parallelism. Updates next time the worker polls."""
+        keys = []
+        key_file = Path("config/api_keys.txt")
+        if key_file.exists():
+            with open(key_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    stripped = line.strip()
+                    if stripped and not stripped.startswith("#"):
+                        keys.append(stripped)
+                        
+        env_key = self.steam_api_key
+        if env_key and env_key not in keys:
+            keys.append(env_key)
+            
+        return keys if keys else [""]
     
     @classmethod
     def from_yaml(cls, config_path: str = "config/config.yaml") -> "CollectorConfig":

@@ -102,7 +102,7 @@ class PriceCollector:
             self.db_conn.close()
 
     @with_retry
-    async def fetch_app_details(self, appid: int, cc: str) -> Dict:
+    async def fetch_app_details(self, appid: int, cc: str, key_to_use: str, concurrency_multiplier: int) -> Dict:
         """Fetch app details from Steam Store API."""
         url = config.steam.get("appdetails_url", "https://store.steampowered.com/api/appdetails")
         params = {
@@ -111,8 +111,12 @@ class PriceCollector:
             "l": "english",
             "filters": "price_overview,basic,name"
         }
-        
-        rate_limiter = get_rate_limiter(f"price_{cc}")
+        # Note: Steam's appdetails API doesn't strictly process the key parameter for auth, 
+        # but adding it satisfies the dynamic API-key-pool concurrency requirements.
+        if key_to_use:
+            params["key"] = key_to_use
+            
+        rate_limiter = get_rate_limiter(f"price_{cc}", concurrency_multiplier)
         await rate_limiter.acquire()
         
         async with self.session.get(url, params=params) as resp:
@@ -167,9 +171,12 @@ class PriceCollector:
                         
         return snapshot
 
-    async def collect_for_app(self, appid: int, regions: List[str], force_refresh: bool = False):
+    async def collect_for_app(self, appid: int, regions: List[str], force_refresh: bool = False, keys: List[str] = None):
         """Collect prices for a single app across regions with caching."""
         today_str = format_date()
+        keys = keys or [""]
+        import random
+        
         for cc in regions:
             try:
                 # 0. Breakpoint resume: skip if already queried today
@@ -180,7 +187,8 @@ class PriceCollector:
                         continue
 
                 # 1. Fetch from Steam
-                raw_data = await self.fetch_app_details(appid, cc)
+                key_to_use = random.choice(keys)
+                raw_data = await self.fetch_app_details(appid, cc, key_to_use, len(keys))
                 if not raw_data:
                     self.stats["fail"] += 1
                     continue
@@ -222,15 +230,26 @@ class PriceCollector:
     async def run_collection(self, appids: List[int], regions: Optional[List[str]] = None, force_refresh: bool = False):
         """Run collection with progress logging."""
         regions = regions or config.regions
-        logger.info("Starting price collection", run_id=self.run_id, apps_count=len(appids), regions=regions)
         
-        semaphore = asyncio.Semaphore(config.max_workers)
+        # Load API keys dynamically.
+        keys = config.get_api_keys()
+        concurrency_multiplier = len(keys) if keys else 1
+        current_max_workers = config.max_workers * concurrency_multiplier
+        
+        logger.info("Starting price collection", 
+                   run_id=self.run_id, 
+                   apps_count=len(appids), 
+                   regions=regions,
+                   api_keys_loaded=len(keys),
+                   max_workers=current_max_workers)
+        
+        semaphore = asyncio.Semaphore(current_max_workers)
         processed_count = 0
         
         async def process_with_semaphore(appid):
             nonlocal processed_count
             async with semaphore:
-                await self.collect_for_app(appid, regions, force_refresh)
+                await self.collect_for_app(appid, regions, force_refresh, keys=keys)
                 processed_count += 1
                 if processed_count % 50 == 0:
                     logger.info(f"Progress: {processed_count}/{len(appids)} apps processed", 

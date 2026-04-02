@@ -50,10 +50,14 @@ class CatalogSync:
     @with_retry
     async def fetch_app_list_page(self, last_appid: int = 0, if_modified_since: int = 0, max_results: int = 1000) -> Dict:
         url = f"{config.steam.get('base_url', 'https://api.steampowered.com')}/IStoreService/GetAppList/v1/"
-        params = {"key": config.steam_api_key, "last_appid": last_appid, "max_results": max_results}
+        keys = config.get_api_keys()
+        import random
+        key_to_use = random.choice(keys) if keys else ""
+        
+        params = {"key": key_to_use, "last_appid": last_appid, "max_results": max_results}
         if if_modified_since > 0: params["if_modified_since"] = if_modified_since
         
-        await get_rate_limiter("catalog").acquire()
+        await get_rate_limiter("catalog", len(keys)).acquire()
         async with self.session.get(url, params=params) as resp:
             if resp.status != 200: resp.raise_for_status()
             data = await resp.json()

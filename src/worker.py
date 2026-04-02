@@ -66,6 +66,29 @@ async def run_worker():
                 else:
                     if changed_apps:
                         appids = [app["appid"] for app in changed_apps]
+                        
+                # --- SORTING LOGIC FOR OPTIMIZATION ---
+                # Prioritize: 1. Hot Apps (top 6000), 2. New Apps (higher AppID first)
+                import os
+                hot_apps = set()
+                if os.path.exists("data/hot_apps.txt"):
+                    with open("data/hot_apps.txt") as f:
+                        for line in f:
+                            if line.strip().isdigit():
+                                hot_apps.add(int(line.strip()))
+                
+                priority_appids = []
+                regular_appids = []
+                for appid in appids:
+                    if appid in hot_apps:
+                        priority_appids.append(appid)
+                    else:
+                        regular_appids.append(appid)
+                
+                # Sort regular apps descending so newer games (larger appids) are processed first
+                regular_appids.sort(reverse=True)
+                appids = priority_appids + regular_appids
+                # --------------------------------------
                 
                 # 3. Collect Prices
                 if appids:

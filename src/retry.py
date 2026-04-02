@@ -28,8 +28,11 @@ class RateLimiter:
     """Simple async rate limiter for conservative request pacing."""
     
     def __init__(self, rate: float = 1.0):
-        self.rate = rate  # requests per second
+        self.update_rate(rate)
         self.last_call = 0.0
+        
+    def update_rate(self, rate: float):
+        self.rate = rate  # requests per second
         self.min_interval = 1.0 / rate if rate > 0 else 1.0
     
     async def acquire(self):
@@ -47,11 +50,13 @@ class RateLimiter:
 _rate_limiters: dict = {}
 
 
-def get_rate_limiter(region: str = "default") -> RateLimiter:
+def get_rate_limiter(region: str = "default", concurrency_multiplier: int = 1) -> RateLimiter:
     """Get or create rate limiter for a region."""
+    rps = config.rate_limit.get("requests_per_second_per_worker", 0.8) * concurrency_multiplier
     if region not in _rate_limiters:
-        rps = config.rate_limit.get("requests_per_second_per_worker", 0.8)
         _rate_limiters[region] = RateLimiter(rate=rps)
+    else:
+        _rate_limiters[region].update_rate(rps)
     return _rate_limiters[region]
 
 
