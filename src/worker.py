@@ -49,13 +49,21 @@ async def run_worker():
                 # 1. Sync Catalog
                 # To prevent syncing full catalog multiple times a day (since each region has its own batch)
                 # we do a simple file size check for full sync.
+                is_catalog_sync_needed = True
                 if mode == "full":
-                    if catalog_path.exists() and catalog_path.stat().st_size > 5_000_000:
+                    # Check if today's catalog exists and has enough size to be a real full catalog (180k+ apps ~ 100MB+)
+                    if catalog_path.exists() and catalog_path.stat().st_size > 50_000_000:
                         logger.info("Full catalog for today already exists locally, skipping duplicate full catalog sync.")
+                        is_catalog_sync_needed = False
                     else:
-                        _, changed_apps = await run_catalog_sync(mode="full")
+                        if catalog_path.exists():
+                            logger.info(f"Existing catalog is too small ({catalog_path.stat().st_size} bytes), overwriting with full sync...")
+                            catalog_path.unlink() # Delete incomplete catalog so it doesn't cause issues
+                
+                if is_catalog_sync_needed:
+                    _, changed_apps = await run_catalog_sync(mode=mode)
                 else:
-                    _, changed_apps = await run_catalog_sync(mode="incremental")
+                    changed_apps = [] # If skipped, we read appids directly below
                 
                 # 2. Get target appids
                 appids = []
@@ -64,7 +72,10 @@ async def run_worker():
                         for app in read_jsonl(catalog_path):
                             appids.append(app["appid"])
                 else:
-                    if changed_apps:
+                    if not is_catalog_sync_needed:
+                        # If incremental was skipped (rare, but future proofing), we'd need to handle it.
+                        pass
+                    elif changed_apps:
                         appids = [app["appid"] for app in changed_apps]
                         
                 # --- SORTING LOGIC FOR OPTIMIZATION ---
@@ -92,9 +103,14 @@ async def run_worker():
                 
                 # 3. Collect Prices
                 if appids:
-                    # In worker mode, we let the SQLite cache handle resumption automatically
+                        # In worker mode, we let the SQLite cache handle resumption automatically
                     force_refresh = False
                     logger.info("Starting price collection for batch", region=region, app_count=len(appids))
+                    
+                    # Log if it looks suspiciously small
+                    if len(appids) < 10000 and mode == "full":
+                        logger.warning(f"Batch mode is full but only {len(appids)} apps were found! Check if catalog sync failed or was interrupted.")
+                    
                     await collect_prices(appids=appids, regions=[region], run_id=batch_id, force_refresh=force_refresh)
                 else:
                     logger.info("No apps to collect for this batch")
