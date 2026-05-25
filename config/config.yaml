@@ -10,18 +10,27 @@ collector:
     - gb
     - jp
     - de
+    - vn
+    - id
+    - in
   default_currency:
     us: "USD"
     cn: "CNY"
     gb: "GBP"
     jp: "JPY"
     de: "EUR"
+    vn: "VND"
+    id: "IDR"
+    in: "INR"
   default_cc_to_currency:
     us: "USD"
     cn: "CNY"
     gb: "GBP"
     jp: "JPY"
     de: "EUR"
+    vn: "VND"
+    id: "IDR"
+    in: "INR"
 
 rate_limit:
   max_workers: 3

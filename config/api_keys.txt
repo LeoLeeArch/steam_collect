@@ -1,0 +1,8 @@
+# Steam API Keys Pool
+# You can add as many Steam API keys here as you want.
+# One key per line. Lines starting with # are comments.
+# Each added key multiplies your concurrency limit (parallelism) dynamically!
+# No need to restart the worker; keys will take effect automatically on the next region/batch run.
+
+# Real key
+EFF67271086F40B15F49FDA14C951E34
